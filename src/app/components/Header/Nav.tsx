@@ -22,7 +22,7 @@ const Nav = () => {
       >
         Docs
       </Link>
-      <Login />
+      <Login clientId={process.env.NEXT_PUBLIC_GITHUB_ID ?? ""} />
     </>
   );
 };

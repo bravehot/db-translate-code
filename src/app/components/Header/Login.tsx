@@ -1,20 +1,51 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ConfigProvider, Modal } from "antd";
+import { useSearchParams } from "next/navigation";
+import { Modal, message } from "antd";
 import { motion } from "framer-motion";
+import { useMutation } from "react-query";
 import { GithubOutlined, WalletOutlined } from "@ant-design/icons";
 import Tilt from "react-parallax-tilt";
 
-import theme from "@/app/utils/theme";
-
+import UserInfo from "./UserInfo";
 import styles from "./styles/login.module.css";
-import getConfig from "next/config";
 
-const Login = () => {
+import { githubLogin, getUserInfo } from "@/app/utils/request";
+
+import { LoginTypeEnum } from "@/app/@types/enum";
+import type { NextPage } from "next";
+import type { InteUserInfo } from "@/app/@types";
+
+const Login: NextPage<{ clientId: string }> = ({ clientId }) => {
+  const gitHubCode = useSearchParams().get("code");
+  const [messageAPI, contextHolder] = message.useMessage();
+
+  const githubMutation = useMutation({
+    mutationFn: () => githubLogin<InteUserInfo>(gitHubCode!),
+    onSuccess: ({ data }) => {
+      messageAPI.success("Login successfully");
+      localStorage.setItem("_db_token", data.accessToken);
+      setUserInfo(data);
+    },
+  });
+
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [userInfo, setUserInfo] = useState<InteUserInfo>();
 
   useEffect(() => {
-    console.log("publicRuntimeConfig: ", getConfig());
+    if (gitHubCode && !localStorage.getItem("_db_token")) {
+      githubMutation.mutate();
+    }
+  }, [gitHubCode]);
+
+  useEffect(() => {
+    const getInfoByToken = async () => {
+      const { data } = await getUserInfo<InteUserInfo>();
+      setUserInfo(data);
+    };
+    if (localStorage.getItem("_db_token")) {
+      getInfoByToken();
+    }
   }, []);
 
   const handleModalOpen = () => {
@@ -22,16 +53,38 @@ const Login = () => {
       return !prev;
     });
   };
+
+  const handleLogin = (type: LoginTypeEnum) => {
+    if (type === LoginTypeEnum.WEB2) {
+      if (clientId) {
+        const url = `https://github.com/login/oauth/authorize?scope=user:email&client_id=${clientId}`;
+        window.open(url);
+      } else {
+        messageAPI.error("client Id is empty");
+      }
+    }
+
+    if (type === LoginTypeEnum.WEB3) {
+      console.log("web3");
+    }
+  };
+
   return (
-    <ConfigProvider theme={theme}>
-      <motion.button
-        className={styles["login-btn"]}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 1 }}
-        onClick={handleModalOpen}
-      >
-        Login
-      </motion.button>
+    <>
+      {contextHolder}
+
+      {userInfo?.name ? (
+        <UserInfo userInfo={userInfo} setUserInfo={setUserInfo} />
+      ) : (
+        <motion.button
+          className={styles["login-btn"]}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 1 }}
+          onClick={handleModalOpen}
+        >
+          Login
+        </motion.button>
+      )}
 
       <Modal
         title="Please select login methods"
@@ -40,28 +93,28 @@ const Login = () => {
         footer={null}
       >
         <section className="grid grid-cols-2 gap-x-10 p-4">
-          <Tilt
-            className={styles["login-method"]}
-            scale={1.1}
-            transitionSpeed={2500}
-            perspective={500}
-          >
-            <GithubOutlined style={{ fontSize: 96 }} className="mb-5" />
-            <span className={styles["login-method-text"]}>WEB2</span>
+          <Tilt scale={1.1} transitionSpeed={2500} perspective={500}>
+            <section
+              className={styles["login-method"]}
+              onClick={() => handleLogin(LoginTypeEnum.WEB2)}
+            >
+              <GithubOutlined style={{ fontSize: 96 }} className="mb-5" />
+              <span className={styles["login-method-text"]}>WEB2</span>
+            </section>
           </Tilt>
 
-          <Tilt
-            className={styles["login-method"]}
-            scale={1.1}
-            transitionSpeed={2500}
-            perspective={500}
-          >
-            <WalletOutlined style={{ fontSize: 96 }} className="mb-5" />
-            <span className={styles["login-method-text"]}>WEB3</span>
+          <Tilt scale={1.1} transitionSpeed={2500} perspective={500}>
+            <section
+              className={styles["login-method"]}
+              onClick={() => handleLogin(LoginTypeEnum.WEB3)}
+            >
+              <WalletOutlined style={{ fontSize: 96 }} className="mb-5" />
+              <span className={styles["login-method-text"]}>WEB3</span>
+            </section>
           </Tilt>
         </section>
       </Modal>
-    </ConfigProvider>
+    </>
   );
 };
 

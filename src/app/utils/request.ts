@@ -1,4 +1,6 @@
-import axios, { AxiosRequestConfig } from "axios";
+import { InteUserInfo } from "./../@types/index";
+import { message } from "antd";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 const axiosInterface = axios.create({
   baseURL: "http://localhost:8848",
@@ -16,6 +18,16 @@ axiosInterface.interceptors.request.use((config) => {
   return config;
 });
 
+axiosInterface.interceptors.response.use(
+  async (response: AxiosResponse<API.BaseResponseType<any>>) => {
+    return response;
+  },
+  ({ response }) => {
+    const { data } = response;
+    message.error(data.message ?? "Internal Server Error");
+  }
+);
+
 export const request = async <T>(
   config: AxiosRequestConfig
 ): Promise<API.BaseResponseType<T>> => {
@@ -27,9 +39,16 @@ export const request = async <T>(
   }
 };
 
-export const getUserInfo = <T>(code: string) => {
+export const getUserInfo = <T>() => {
   return request<T>({
-    url: "/auth/user",
+    url: "/auth/userInfo",
+    method: "GET",
+  });
+};
+
+export const githubLogin = <T>(code: string) => {
+  return request<T>({
+    url: "/auth/github",
     method: "GET",
     params: { code },
   });
