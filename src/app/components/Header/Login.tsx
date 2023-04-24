@@ -14,7 +14,7 @@ import { githubLogin, getUserInfo } from "@/app/utils/request";
 
 import { LoginTypeEnum } from "@/app/@types/enum";
 import type { NextPage } from "next";
-import type { InteUserInfo } from "@/app/@types";
+import type { InteUserInfo } from "@/app/@types/user";
 
 const Login: NextPage<{ clientId: string }> = ({ clientId }) => {
   const gitHubCode = useSearchParams().get("code");

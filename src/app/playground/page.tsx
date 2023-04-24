@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Button, Col, Row, message } from "antd";
+import { Button, Col, Row, Spin, message } from "antd";
 
 import {
   ProFormSelect,
@@ -9,16 +9,42 @@ import {
 } from "@ant-design/pro-components";
 import CodeEditor from "./components/CodeEditor";
 
+import type { InteCodeEditorProp } from "./components/CodeEditor";
+import { getFieLdList } from "../utils/request";
+
+export interface InteEditorConfig extends Omit<InteCodeEditorProp, "setCode"> {}
+
 const Playground = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
+  const [language, setLanguage] = useState<string>("typescript");
+
+  const getTypescriptCode = async (
+    apiKey: string,
+    language?: string,
+    codeType?: string
+  ) => {
+    setLoading(true);
+    const { data } = await getFieLdList({
+      code,
+      apiKey,
+      language,
+      codeType,
+    });
+    console.log(data);
+    setCode(data.tscode);
+    setLoading(false);
+  };
+
   return (
     <section className="flex-1 w-full">
       {contextHolder}
+
       <Row className="w-full h-full">
         <Col span={14}>
-          <CodeEditor code={code} setCode={setCode} />
+          <CodeEditor code={code} setCode={setCode} language={language} />
         </Col>
         <Col span={10}>
           <section className="w-full h-full bg-black/50 p-4 box-border">
@@ -75,12 +101,21 @@ const Playground = () => {
               <StepsForm.StepForm
                 className="mt-5"
                 title="Config"
+                initialValues={{
+                  language: "TypeScript",
+                }}
                 onFinish={async (value) => {
                   if (!code) {
                     messageApi.error("Please input some code");
                     return false;
                   }
+                  getTypescriptCode(value.key, value.language, value.codeType);
                   return true;
+                }}
+                onValuesChange={(val) => {
+                  if (val.language) {
+                    setLanguage(val.language.toLowerCase());
+                  }
                 }}
               >
                 <ProFormSelect
@@ -89,6 +124,7 @@ const Playground = () => {
                   label="Language"
                   options={[
                     { label: "TypeScript", value: "TypeScript" },
+                    { label: "Prisma", value: "Prisma" },
                     { label: "JavaScript", value: "JavaScript" },
                     { label: "Java", value: "Java" },
                     { label: "Go", value: "Go" },
@@ -102,7 +138,6 @@ const Playground = () => {
                   label="Code Type"
                   options={[
                     { label: "Entity Class", value: "Entity Class" },
-                    { label: "Prisma", value: "Prisma" },
                     { label: "SQL Language", value: "SQL Language" },
                   ]}
                 />
@@ -124,6 +159,14 @@ const Playground = () => {
           </section>
         </Col>
       </Row>
+
+      {isLoading ? (
+        <Spin
+          tip="Generating code By AI..."
+          size="large"
+          className="w-full h-full flex items-center justify-center"
+        />
+      ) : null}
     </section>
   );
 };

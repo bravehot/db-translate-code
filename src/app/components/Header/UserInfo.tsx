@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 import type { MenuProps } from "antd";
-import type { InteUserInfo } from "@/app/@types";
+import type { InteUserInfo } from "@/app/@types/user";
 import type { NextPage } from "next";
 
 const UserInfo: NextPage<{

@@ -1,6 +1,8 @@
-import { InteUserInfo } from "./../@types/index";
 import { message } from "antd";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios from "axios";
+
+import type { AxiosRequestConfig, AxiosResponse } from "axios";
+import type { InteFieldConfig } from "../@types/code";
 
 const axiosInterface = axios.create({
   baseURL: "http://localhost:8848",
@@ -51,5 +53,13 @@ export const githubLogin = <T>(code: string) => {
     url: "/auth/github",
     method: "GET",
     params: { code },
+  });
+};
+
+export const getFieLdList = (data: InteFieldConfig) => {
+  return request<{ tscode: string; fieldList: string }>({
+    url: "/code/field",
+    method: "POST",
+    data,
   });
 };
