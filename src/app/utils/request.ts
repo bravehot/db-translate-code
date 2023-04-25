@@ -3,6 +3,7 @@ import axios from "axios";
 
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import type { InteFieldConfig } from "../@types/code";
+import { InteField } from "../@types/playground";
 
 const axiosInterface = axios.create({
   baseURL: "http://localhost:8848",
@@ -13,9 +14,12 @@ const axiosInterface = axios.create({
 
 axiosInterface.interceptors.request.use((config) => {
   const token = localStorage.getItem("_db_token");
+  const apiKey = localStorage.getItem("_apiKey");
+
   if (token) {
     const { headers } = config;
     headers!.Authorization = `Bearer ${token}`;
+    headers!.ApiKey = apiKey;
   }
   return config;
 });
@@ -59,6 +63,31 @@ export const githubLogin = <T>(code: string) => {
 export const getFieLdList = (data: InteFieldConfig) => {
   return request<{ tscode: string; fieldList: string }>({
     url: "/code/field",
+    method: "POST",
+    data,
+  });
+};
+
+export const getTsCode = (data: InteField[]) => {
+  return request<{ tscode: string }>({
+    url: "/code/regenerate",
+    method: "POST",
+    data: {
+      code: JSON.stringify(data),
+    },
+  });
+};
+
+export const getGenerateCode = (data: {
+  code: string;
+  framework: string;
+  useTs: "Y" | "N";
+  componetLib: string;
+  component: string;
+  mockData: "Y" | "N";
+}) => {
+  return request<{ code: string }>({
+    url: "/code/generate",
     method: "POST",
     data,
   });
