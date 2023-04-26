@@ -30,7 +30,13 @@ axiosInterface.interceptors.response.use(
   },
   ({ response }) => {
     const { data } = response;
-    message.error(data.message ?? "Internal Server Error");
+    if (data.code === 401) {
+      localStorage.removeItem("_db_token");
+      localStorage.removeItem("_apiKey");
+      message.error("Login has expired, please log in again");
+    } else {
+      message.error(data.message ?? "Internal Server Error");
+    }
   }
 );
 

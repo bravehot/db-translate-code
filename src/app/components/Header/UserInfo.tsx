@@ -25,6 +25,7 @@ const UserInfo: NextPage<{
     if (key === "logout") {
       messageAPI.success("Logout successfully");
       localStorage.removeItem("_db_token");
+      localStorage.removeItem("_apiKey");
       setUserInfo(undefined);
       router.push("/");
     }
