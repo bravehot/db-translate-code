@@ -1,18 +1,16 @@
 import { Avatar, Dropdown, message } from "antd";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 
 import type { MenuProps } from "antd";
-import type { InteUserInfo } from "@/app/@types/user";
+import type { InteUserInfo } from "@/@types/user";
 import type { NextPage } from "next";
+import { signOut } from "next-auth/react";
 
 const UserInfo: NextPage<{
   userInfo: InteUserInfo;
-  setUserInfo: (info: InteUserInfo | undefined) => void;
-}> = ({ userInfo, setUserInfo }) => {
-  const router = useRouter();
+}> = ({ userInfo }) => {
   const [messageAPI, contextHolder] = message.useMessage();
-  const { avatar, name } = userInfo;
+  const { image, name } = userInfo;
 
   const items: MenuProps["items"] = [
     {
@@ -21,13 +19,10 @@ const UserInfo: NextPage<{
     },
   ];
 
-  const handleLogout: MenuProps["onClick"] = ({ key }) => {
+  const handleLogout: MenuProps["onClick"] = async ({ key }) => {
     if (key === "logout") {
+      await signOut();
       messageAPI.success("Logout successfully");
-      localStorage.removeItem("_db_token");
-      localStorage.removeItem("_apiKey");
-      setUserInfo(undefined);
-      router.push("/");
     }
   };
 
@@ -40,11 +35,11 @@ const UserInfo: NextPage<{
         arrow={{ pointAtCenter: true }}
       >
         <motion.div whileHover={{ rotate: 360 }} whileTap={{ rotate: 0 }}>
-          {avatar ? (
+          {image ? (
             <Avatar
               size={42}
               className="cursor-pointer border-2 border-fuchsia-500 rounded-full"
-              src={avatar}
+              src={image}
             />
           ) : (
             <Avatar

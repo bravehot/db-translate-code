@@ -1,5 +1,5 @@
 "use client";
-import { Button, Col, Empty, Row, message } from "antd";
+import { Col, Empty, Row, message } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import {
   ProFormList,
@@ -8,7 +8,7 @@ import {
 } from "@ant-design/pro-components";
 
 import type { NextPage } from "next";
-import type { InteField } from "@/app/@types/playground";
+import type { InteField } from "@/@types/playground";
 const list = [
   { name: "id", type: "number", required: true },
   { name: "name", type: "string", required: true },
@@ -25,7 +25,6 @@ interface InteFieldListProp {
   fieldList: InteField[];
 }
 const FieldList: NextPage<InteFieldListProp> = ({ fieldList }) => {
-  fieldList = list;
   return (
     <>
       {fieldList.length ? (

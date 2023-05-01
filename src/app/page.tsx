@@ -1,3 +1,5 @@
-export default function Home() {
-  return <main>main</main>;
-}
+const Home = async () => {
+  return <main>Home</main>;
+};
+
+export default Home;

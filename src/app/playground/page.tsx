@@ -8,13 +8,13 @@ import {
 } from "@ant-design/pro-components";
 import CodeEditor from "./components/CodeEditor";
 
-import { getFieLdList, getGenerateCode, getTsCode } from "../utils/request";
+import { getFieLdList, getGenerateCode, getTsCode } from "../../utils/request";
 
 import FieldList from "./components/FieldList";
 import GetCode from "./components/GetCode";
 
 import type { InteCodeEditorProp } from "./components/CodeEditor";
-import type { InteField } from "../@types/playground";
+import type { InteField } from "../../@types/playground";
 
 export interface InteEditorConfig extends Omit<InteCodeEditorProp, "setCode"> {}
 
