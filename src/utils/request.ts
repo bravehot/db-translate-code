@@ -2,11 +2,10 @@ import { message } from "antd";
 import axios from "axios";
 
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import type { InteFieldConfig } from "../@types/code";
-import { InteField } from "../@types/playground";
+import type { InteFieldConfig, InteGenerateCode } from "@/@types/code";
+import type { InteField } from "@/@types/code";
 
 const axiosInterface = axios.create({
-  baseURL: "http://localhost:8848",
   headers: {
     "Content-Type": "application/json",
   },
@@ -51,24 +50,9 @@ export const request = async <T>(
   }
 };
 
-export const getUserInfo = <T>() => {
-  return request<T>({
-    url: "/auth/userInfo",
-    method: "GET",
-  });
-};
-
-export const githubLogin = <T>(code: string) => {
-  return request<T>({
-    url: "/auth/github",
-    method: "GET",
-    params: { code },
-  });
-};
-
 export const getFieLdList = (data: InteFieldConfig) => {
   return request<{ tscode: string; fieldList: string }>({
-    url: "/code/field",
+    url: "api/code/getCodeField",
     method: "POST",
     data,
   });
@@ -84,14 +68,7 @@ export const getTsCode = (data: InteField[]) => {
   });
 };
 
-export const getGenerateCode = (data: {
-  code: string;
-  framework: string;
-  useTs: "Y" | "N";
-  componetLib: string;
-  component: string;
-  mockData: "Y" | "N";
-}) => {
+export const getGenerateCode = (data: InteGenerateCode) => {
   return request<{ code: string }>({
     url: "/code/generate",
     method: "POST",

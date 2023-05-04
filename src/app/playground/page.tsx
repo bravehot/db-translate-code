@@ -15,7 +15,7 @@ import CodeHighlight from "./components/CodeHighlight";
 import { getFieLdList, getGenerateCode, getTsCode } from "@/utils/request";
 
 import type { InteCodeEditorProp } from "./components/CodeEditor";
-import type { InteField } from "@/@types/playground";
+import type { InteField } from "@/@types/code";
 
 export interface InteEditorConfig extends Omit<InteCodeEditorProp, "setCode"> {}
 
