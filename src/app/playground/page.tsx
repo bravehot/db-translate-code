@@ -6,21 +6,23 @@ import {
   ProFormText,
   StepsForm,
 } from "@ant-design/pro-components";
+
 import CodeEditor from "./components/CodeEditor";
-
-import { getFieLdList, getGenerateCode, getTsCode } from "../../utils/request";
-
 import FieldList from "./components/FieldList";
 import GetCode from "./components/GetCode";
+import CodeHighlight from "./components/CodeHighlight";
+
+import { getFieLdList, getGenerateCode, getTsCode } from "@/utils/request";
 
 import type { InteCodeEditorProp } from "./components/CodeEditor";
-import type { InteField } from "../../@types/playground";
+import type { InteField } from "@/@types/playground";
 
 export interface InteEditorConfig extends Omit<InteCodeEditorProp, "setCode"> {}
 
 const Playground = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
+  const [currentStep, setCurrentStep] = useState<number>(1);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const [language, setLanguage] = useState<string>("typescript");
@@ -62,11 +64,19 @@ const Playground = () => {
       {contextHolder}
       <Row className="w-full h-full">
         <Col span={12}>
-          <CodeEditor code={code} setCode={setCode} language={language} />
+          {currentStep === 0 ? (
+            <CodeEditor code={code} setCode={setCode} language={language} />
+          ) : (
+            <CodeHighlight language={language} code={code} />
+          )}
         </Col>
         <Col span={12}>
           <section className="w-full h-full bg-black/50 p-4 box-border">
             <StepsForm
+              current={currentStep}
+              onCurrentChange={(step) => {
+                setCurrentStep(step);
+              }}
               containerStyle={{ minWidth: "auto", width: "100%" }}
               submitter={{
                 render: (props: any) => {

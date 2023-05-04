@@ -22,16 +22,6 @@ const GetCode = () => {
           },
         ]}
       />
-      {/* <ProFormDependency name={["framework"]}>
-        {({ framework }) => {
-          return (
-            <>
-              {framework === "Vue3" ? <></> : null}
-              {framework === "React" ? <></> : null}
-            </>
-          );
-        }}
-      </ProFormDependency> */}
       <ProFormRadio.Group
         name="useTs"
         label="Use TypeScript"
