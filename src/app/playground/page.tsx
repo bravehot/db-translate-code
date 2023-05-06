@@ -12,7 +12,7 @@ import FieldList from "./components/FieldList";
 import GetCode from "./components/GetCode";
 import CodeHighlight from "./components/CodeHighlight";
 
-import { getFieLdList, getGenerateCode, getTsCode } from "@/utils/request";
+import { getCodeField, getGenerateCode, getTsCode } from "@/utils/request";
 
 import type { InteCodeEditorProp } from "./components/CodeEditor";
 import type { InteField } from "@/@types/code";
@@ -33,17 +33,16 @@ const Playground = () => {
     language?: string,
     codeType?: string
   ) => {
-    const { data } = await getFieLdList({
+    const { tscode, fieldList } = await getCodeField({
       code,
       apiKey,
       language,
       codeType,
     });
-    const { tscode, fieldList } = data;
 
     try {
       const currentFieldList = eval(
-        `() => {${fieldList.replaceAll("\n", "")} return fieldLists}`
+        `() => {${fieldList?.replaceAll("\n", "")} return fieldLists}`
       )();
       setFieldList(currentFieldList);
     } catch (error) {
@@ -54,7 +53,7 @@ const Playground = () => {
     if (!localStorage.getItem("_apiKey")) {
       localStorage.setItem("_apiKey", apiKey);
     }
-    setCode(tscode.replace("\n", ""));
+    setCode(tscode?.replace("\n", "") || "");
     setLoading(false);
     setLanguage("typescript");
   };
@@ -191,8 +190,9 @@ const Playground = () => {
                 title="Field"
                 onFinish={async (val) => {
                   setLoading(true);
-                  const { data } = await getTsCode(val.fieldList);
-                  setCode(data.tscode);
+                  const API_KEY = localStorage.getItem("_apiKey");
+                  const { tscode } = await getTsCode(val.fieldList, API_KEY!);
+                  setCode(tscode || "");
                   setLoading(false);
                   return true;
                 }}
@@ -210,16 +210,21 @@ const Playground = () => {
                 }}
                 onFinish={async (val) => {
                   setLoading(true);
-                  const { data } = await getGenerateCode({
-                    code,
-                    framework: val.framework,
-                    useTs: val.useTs,
-                    componetLib: val.componetLib,
-                    component: val.component,
-                    mockData: val.mockData,
-                  });
+                  const API_KEY = localStorage.getItem("_apiKey");
+
+                  const data = await getGenerateCode(
+                    {
+                      code,
+                      framework: val.framework,
+                      useTs: val.useTs,
+                      componetLib: val.componetLib,
+                      component: val.component,
+                      mockData: val.mockData,
+                    },
+                    API_KEY!
+                  );
                   setLoading(false);
-                  setCode(data.code);
+                  setCode(data?.code || "");
                   setLanguage(val.component.toLowerCase());
                   return true;
                 }}

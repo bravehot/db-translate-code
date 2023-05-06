@@ -46,7 +46,7 @@ const CodeHighlight: NextPage<{
 
   useEffect(() => {
     if (language.startsWith("Vue")) {
-      setPrismLanguage("html");
+      setPrismLanguage("cshtml");
     } else if (language === "React") {
       setPrismLanguage("jsx");
     } else {

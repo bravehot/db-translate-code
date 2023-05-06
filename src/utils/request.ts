@@ -1,77 +1,48 @@
-import { message } from "antd";
-import axios from "axios";
+import completion from "./completion";
+import {
+  generateCode,
+  generateTSCode,
+  getFieldList,
+  getTypescriptCode,
+} from "./prompt";
 
-import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import type { InteFieldConfig, InteGenerateCode } from "@/@types/code";
-import type { InteField } from "@/@types/code";
+import type {
+  InteField,
+  InteFieldConfig,
+  InteGenerateCode,
+} from "@/@types/code";
 
-const axiosInterface = axios.create({
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+const getCodeField = async (data: InteFieldConfig) => {
+  const { apiKey, code, language, codeType } = data;
 
-axiosInterface.interceptors.request.use((config) => {
-  const token = localStorage.getItem("_db_token");
-  const apiKey = localStorage.getItem("_apiKey");
+  const tscode = await completion(
+    getTypescriptCode(code, language, codeType),
+    apiKey
+  );
+  const fieldList = await completion(getFieldList(tscode || ""), apiKey);
+  return {
+    tscode,
+    fieldList,
+  };
+};
 
-  if (token) {
-    const { headers } = config;
-    headers!.Authorization = `Bearer ${token}`;
-    headers!.ApiKey = apiKey;
+const getTsCode = async (data: InteField[], apiKey: string) => {
+  if (!apiKey) {
+    new Error("apiKey is required");
   }
-  return config;
-});
+  const tscode = await completion(generateTSCode(JSON.stringify(data)), apiKey);
+  return {
+    tscode,
+  };
+};
 
-axiosInterface.interceptors.response.use(
-  async (response: AxiosResponse<API.BaseResponseType<any>>) => {
-    return response;
-  },
-  ({ response }) => {
-    const { data } = response;
-    if (data.code === 401) {
-      localStorage.removeItem("_db_token");
-      localStorage.removeItem("_apiKey");
-      message.error("Login has expired, please log in again");
-    } else {
-      message.error(data.message ?? "Internal Server Error");
-    }
+const getGenerateCode = async (data: InteGenerateCode, apiKey: string) => {
+  if (!apiKey) {
+    throw new Error("apiKey is required");
   }
-);
 
-export const request = async <T>(
-  config: AxiosRequestConfig
-): Promise<API.BaseResponseType<T>> => {
-  try {
-    const { data } = await axiosInterface(config);
-    return data;
-  } catch (error) {
-    return Promise.reject(error);
-  }
+  const code = await completion(generateCode(data), apiKey);
+  return { code };
 };
 
-export const getFieLdList = (data: InteFieldConfig) => {
-  return request<{ tscode: string; fieldList: string }>({
-    url: "api/code/getCodeField",
-    method: "POST",
-    data,
-  });
-};
-
-export const getTsCode = (data: InteField[]) => {
-  return request<{ tscode: string }>({
-    url: "/code/regenerate",
-    method: "POST",
-    data: {
-      code: JSON.stringify(data),
-    },
-  });
-};
-
-export const getGenerateCode = (data: InteGenerateCode) => {
-  return request<{ code: string }>({
-    url: "/code/generate",
-    method: "POST",
-    data,
-  });
-};
+export { getCodeField, getTsCode, getGenerateCode };
