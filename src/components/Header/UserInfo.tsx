@@ -38,7 +38,7 @@ const UserInfo: NextPage<{
           {image ? (
             <Avatar
               size={42}
-              className="cursor-pointer border-2 border-fuchsia-500 rounded-full"
+              className="cursor-pointer !border-2 hover:!border-fuchsia-500 rounded-full"
               src={image}
             />
           ) : (

@@ -1,13 +1,14 @@
 export interface InteFieldConfig {
   code: string;
   apiKey: string;
-  language?: string;
+  language: string;
   codeType?: string;
 }
 
 export interface InteField {
   name: string;
   type: string;
+  labelName: string;
   required: boolean;
 }
 

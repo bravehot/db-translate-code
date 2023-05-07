@@ -19,7 +19,7 @@ const getCodeField = async (data: InteFieldConfig) => {
     getTypescriptCode(code, language, codeType),
     apiKey
   );
-  const fieldList = await completion(getFieldList(tscode || ""), apiKey);
+  const fieldList = await completion(getFieldList(language, code), apiKey);
   return {
     tscode,
     fieldList,

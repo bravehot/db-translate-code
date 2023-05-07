@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Prism from "prismjs";
 import { message } from "antd";
 
@@ -30,6 +30,11 @@ const CodeHighlight: NextPage<{
     language.toLocaleLowerCase()
   );
 
+  const handleCopyCode = useCallback(async () => {
+    await window.navigator.clipboard.writeText(code);
+    messageApi.success("Copied to clipboard");
+  }, [messageApi, code]);
+
   useEffect(() => {
     Prism.plugins.toolbar.registerButton("copy button", {
       text: "Copy", // required
@@ -37,12 +42,7 @@ const CodeHighlight: NextPage<{
     });
 
     Prism.highlightAll();
-  }, []);
-
-  const handleCopyCode = async () => {
-    await window.navigator.clipboard.writeText(code);
-    messageApi.success("Copied to clipboard");
-  };
+  }, [handleCopyCode]);
 
   useEffect(() => {
     if (language.startsWith("Vue")) {

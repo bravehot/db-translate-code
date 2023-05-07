@@ -1,23 +1,44 @@
 export const getTypescriptCode = (
   code: string,
-  language = "",
-  codeType = ""
+  language: string,
+  codeType?: string
 ) => {
-  return `Extract the relevant fields from the ${language} ${codeType} code below and convert the type to a lowercase Typescript type. finally return a Typescript Interface. ${code}`;
+  return `Generate Typescript code from ${language} ${codeType} code and determine whether it is optional property Required in TypeScript. \n ${code} \n\n`;
 };
 
-export const getFieldList = (code: string) => {
-  return `The following Typescript Interface code has several fields, uses the JavaScript language to generate an array the variable name is  fieldLists, make each object in the array stores the name and type and required of each Javascript type field. finally returns the fieldLists array to me. \n ${code}`;
+export const getFieldList = (language: string, code: string) => {
+  return `Uses the JavaScript to generate an array the array variable name is "fieldLists", An object is stored in "fieldLists", and each object has "name", "type", "required", "labelName" properties. where "name" is the field name and use camel-case method, converts the ${language} type of the field to Javascript type and assigns values to "type", determines whether "required" is required according to SQL and "labelName" to the comment value of the ${language} field. \n ${code} \n\n`;
 };
 
 export const generateTSCode = (code: string) => {
-  return `In the following JSON is a JavaScript code, name represents the name of each field, type represents the type of the field, and required represents whether the field is optional. An Interface of Typescript is generated based on this code. \n ${code}`;
+  return `In the following is a JavaScript Array code, name represents the name of each field, type represents the type of the field, and required represents whether the field is optional, LabelName is a code comment. An Interface of Typescript is generated based on this code \n ${code} \n\n`;
 };
 
 export const generateCode = (prompt: any) => {
   const { code, framework, useTs, componetLib, component, mockData } = prompt;
-  const useTsText = useTs === "Y" ? "Typescript" : "";
+  const useTsText = useTs === "Y" ? "Typescript and" : "Not use TypScript,";
   const mockDataText =
-    mockData === "Y" ? `while generating some default data` : "";
-  return `According to this Typescript Interface code, use ${framework} framework, script SetUp, ${useTsText} and ${componetLib} component libraries and  generate a ${component} component to be used in a .vue file ${mockDataText}. \n ${code}`;
+    mockData === "Y" ? `while generating some default data.` : "";
+
+  let fileName = "";
+  let frameworkCode = "";
+  switch (framework) {
+    case "React":
+      frameworkCode = "hooks";
+      fileName = useTsText ? "tsx" : "jsx";
+      break;
+    case "Vue3":
+      // 在 GPT3.5 中无法生成 setup 语法
+      // frameworkCode = "<script setup> syntactic sugar, ";
+      fileName = ".vue";
+      break;
+    case "Vue2":
+      fileName = ".vue";
+      break;
+
+    default:
+      break;
+  }
+
+  return `According to this Typescript Interface code, use ${framework} framework, ${frameworkCode} ${useTsText} ${componetLib} libraries to generate a ${component} component, the code is comment as the field name of the component. the component will used in a ${fileName} file, ${mockDataText} \n ${code}`;
 };

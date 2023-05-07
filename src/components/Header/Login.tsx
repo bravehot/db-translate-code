@@ -1,5 +1,4 @@
 "use client";
-import { message } from "antd";
 import { motion } from "framer-motion";
 import { signIn, useSession } from "next-auth/react";
 import { GithubOutlined } from "@ant-design/icons";

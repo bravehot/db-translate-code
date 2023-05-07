@@ -1,9 +1,9 @@
 import Link from "next/link";
 import classnames from "classnames";
+import { usePathname } from "next/navigation";
 
 import Login from "./Login";
 import type { NextPage } from "next";
-import { usePathname } from "next/navigation";
 
 const Nav: NextPage = () => {
   const pathName = usePathname();

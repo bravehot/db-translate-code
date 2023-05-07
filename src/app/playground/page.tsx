@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button, Col, Row, Spin, message } from "antd";
 import {
   ProFormSelect,
@@ -14,25 +14,35 @@ import CodeHighlight from "./components/CodeHighlight";
 
 import { getCodeField, getGenerateCode, getTsCode } from "@/utils/request";
 
+import type { ProFormInstance } from "@ant-design/pro-components";
 import type { InteCodeEditorProp } from "./components/CodeEditor";
-import type { InteField } from "@/@types/code";
 
 export interface InteEditorConfig extends Omit<InteCodeEditorProp, "setCode"> {}
 
+export enum StepEnum {
+  SETP_1,
+  SETP_2,
+  SETP_3,
+}
+
 const Playground = () => {
+  const formMapRef = useRef<
+    React.MutableRefObject<ProFormInstance<any> | undefined>[]
+  >([]);
   const [messageApi, contextHolder] = message.useMessage();
 
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [currentStep, setCurrentStep] = useState<number>(0);
   const [isLoading, setLoading] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
-  const [language, setLanguage] = useState<string>("typescript");
-  const [fieldList, setFieldList] = useState<InteField[]>([]);
+  const [codeHighlightLanguage, setCodeHighlightLanguage] =
+    useState<string>("");
 
   const getTsCodeFieldList = async (
     apiKey: string,
-    language?: string,
+    language: string,
     codeType?: string
-  ) => {
+  ): Promise<boolean> => {
+    setLoading(true);
     const { tscode, fieldList } = await getCodeField({
       code,
       apiKey,
@@ -42,36 +52,53 @@ const Playground = () => {
 
     try {
       const currentFieldList = eval(
-        `() => {${fieldList?.replaceAll("\n", "")} return fieldLists}`
+        `() => {${fieldList?.replaceAll("\n", "")} \n return fieldLists}`
       )();
-      setFieldList(currentFieldList);
+
+      if (!localStorage.getItem("_apiKey")) {
+        localStorage.setItem("_apiKey", apiKey);
+      }
+
+      formMapRef?.current?.forEach((formInstanceRef, stepIndex) => {
+        if (stepIndex === StepEnum.SETP_2) {
+          formInstanceRef.current?.setFieldsValue({
+            fieldList: currentFieldList,
+          });
+        }
+      });
+      setCodeHighlightLanguage("typescript");
+      setCode(tscode?.replace("\n", "") || "");
+      return true;
     } catch (error) {
       console.log("error: ", error);
       messageApi.error("Failed to parse field list");
+      return false;
+    } finally {
+      setLoading(false);
     }
-
-    if (!localStorage.getItem("_apiKey")) {
-      localStorage.setItem("_apiKey", apiKey);
-    }
-    setCode(tscode?.replace("\n", "") || "");
-    setLoading(false);
-    setLanguage("typescript");
   };
 
   return (
-    <section className="flex-1 w-full overflow-auto">
+    <section className="flex-1 w-full relative overflow-auto">
       {contextHolder}
       <Row className="w-full h-full">
         <Col span={12}>
-          {currentStep === 0 ? (
-            <CodeEditor code={code} setCode={setCode} language={language} />
+          {currentStep === StepEnum.SETP_1 ? (
+            <CodeEditor
+              code={code}
+              setCode={setCode}
+              language={formMapRef.current[
+                StepEnum.SETP_1
+              ]?.current?.getFieldValue("language")}
+            />
           ) : (
-            <CodeHighlight language={language} code={code} />
+            <CodeHighlight language={codeHighlightLanguage} code={code} />
           )}
         </Col>
         <Col span={12}>
           <section className="w-full h-full bg-black/50 p-4 box-border">
             <StepsForm
+              formMapRef={formMapRef}
               current={currentStep}
               onCurrentChange={(step) => {
                 setCurrentStep(step);
@@ -95,7 +122,13 @@ const Playground = () => {
 
                   if (props.step === 1) {
                     return [
-                      <Button key="pre1" onClick={() => props.onPre?.()}>
+                      <Button
+                        key="pre1"
+                        onClick={() => {
+                          setCode("");
+                          props.onPre?.();
+                        }}
+                      >
                         Previous Step
                       </Button>,
                       <Button
@@ -129,25 +162,19 @@ const Playground = () => {
                 className="mt-5"
                 title="Config"
                 initialValues={{
-                  language: "TypeScript",
+                  language: "sql",
+                  key: localStorage.getItem("_apiKey"),
                 }}
                 onFinish={async (value) => {
                   if (!code) {
                     messageApi.error("Please input some code");
                     return false;
                   }
-                  setLoading(true);
-                  await getTsCodeFieldList(
+                  return await getTsCodeFieldList(
                     value.key,
                     value.language,
                     value.codeType
                   );
-                  return true;
-                }}
-                onValuesChange={(val) => {
-                  if (val.language) {
-                    setLanguage(val.language.toLowerCase());
-                  }
                 }}
               >
                 <ProFormText
@@ -163,16 +190,23 @@ const Playground = () => {
                 />
 
                 <ProFormSelect
+                  rules={[
+                    {
+                      required: true,
+                      message: "Language is required",
+                    },
+                  ]}
                   placeholder="Select language"
                   name="language"
                   label="Language"
                   options={[
-                    { label: "TypeScript", value: "TypeScript" },
-                    { label: "Prisma", value: "Prisma" },
-                    { label: "JavaScript", value: "JavaScript" },
-                    { label: "Java", value: "Java" },
-                    { label: "Go", value: "Go" },
-                    { label: "Python", value: "Python" },
+                    { label: "TypeScript", value: "typeScript" },
+                    { label: "Prisma", value: "prisma" },
+                    { label: "JavaScript", value: "javaScript" },
+                    { label: "Java", value: "java" },
+                    { label: "Go", value: "go" },
+                    { label: "Python", value: "python" },
+                    { label: "SQL Language", value: "sql" },
                   ]}
                 />
 
@@ -197,7 +231,7 @@ const Playground = () => {
                   return true;
                 }}
               >
-                <FieldList fieldList={fieldList} />
+                <FieldList />
               </StepsForm.StepForm>
               <StepsForm.StepForm
                 title="Get Code"
@@ -225,7 +259,17 @@ const Playground = () => {
                   );
                   setLoading(false);
                   setCode(data?.code || "");
-                  setLanguage(val.component.toLowerCase());
+                  console.log(
+                    "123",
+                    formMapRef.current[StepEnum.SETP_3]?.current?.getFieldValue(
+                      "framework"
+                    )
+                  );
+                  setCodeHighlightLanguage(
+                    formMapRef.current[StepEnum.SETP_3]?.current?.getFieldValue(
+                      "framework"
+                    )
+                  );
                   return true;
                 }}
               >
@@ -234,14 +278,14 @@ const Playground = () => {
             </StepsForm>
           </section>
         </Col>
-        {isLoading ? (
-          <Spin
-            tip="Generating code By AI..."
-            size="large"
-            className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center"
-          />
-        ) : null}
       </Row>
+      {isLoading ? (
+        <Spin
+          tip="Generating code By AI..."
+          size="large"
+          className="!absolute top-0 left-0 w-full h-full !flex flex-col items-center justify-center"
+        />
+      ) : null}
     </section>
   );
 };
