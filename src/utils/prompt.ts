@@ -11,7 +11,7 @@ export const getFieldList = (language: string, code: string) => {
 };
 
 export const generateTSCode = (code: string) => {
-  return `In the following is a JavaScript Array code, name represents the name of each field, type represents the type of the field, and required represents whether the field is optional, LabelName is a code comment. An Interface of Typescript is generated based on this code \n ${code} \n\n`;
+  return `In the following is a JavaScript Array code, name represents the name of each field, type represents the type of the field, and required represents whether the field is optional, and set the LabelName as a field comment. Based on this code, a TypeScript interface was generated. \n ${code} \n\n`;
 };
 
 export const generateCode = (prompt: any) => {

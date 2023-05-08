@@ -9,7 +9,7 @@ const completion = async (prompt: string, apiKey: string) => {
     const openai = new OpenAIApi(configuration);
     const response = await openai.createCompletion({
       model: "text-davinci-003",
-      temperature: 0.2,
+      temperature: 0.7,
       max_tokens: 3072,
       top_p: 1,
       frequency_penalty: 0,

@@ -36,6 +36,9 @@ const Playground = () => {
   const [code, setCode] = useState<string>("");
   const [codeHighlightLanguage, setCodeHighlightLanguage] =
     useState<string>("");
+  const [workFlow, setWorkFlow] = useState<{
+    [key in StepEnum]?: string;
+  }>({});
 
   const getTsCodeFieldList = async (
     apiKey: string,
@@ -67,7 +70,13 @@ const Playground = () => {
         }
       });
       setCodeHighlightLanguage("typescript");
+
       setCode(tscode?.replace("\n", "") || "");
+      setWorkFlow({
+        ...workFlow,
+        [StepEnum.SETP_1]: code,
+        [StepEnum.SETP_2]: tscode?.replace("\n", "")!,
+      });
       return true;
     } catch (error) {
       console.log("error: ", error);
@@ -125,7 +134,7 @@ const Playground = () => {
                       <Button
                         key="pre1"
                         onClick={() => {
-                          setCode("");
+                          setCode(workFlow[StepEnum.SETP_1] || "");
                           props.onPre?.();
                         }}
                       >
@@ -143,7 +152,13 @@ const Playground = () => {
 
                   if (props.step === 2) {
                     return [
-                      <Button key="pre2" onClick={() => props.onPre?.()}>
+                      <Button
+                        key="pre2"
+                        onClick={() => {
+                          setCode(workFlow[StepEnum.SETP_2] || "");
+                          props.onPre?.();
+                        }}
+                      >
                         Previous Step
                       </Button>,
                       <Button
@@ -228,6 +243,10 @@ const Playground = () => {
                   const { tscode } = await getTsCode(val.fieldList, API_KEY!);
                   setCode(tscode || "");
                   setLoading(false);
+                  setWorkFlow({
+                    ...workFlow,
+                    [StepEnum.SETP_2]: tscode,
+                  });
                   return true;
                 }}
               >
@@ -259,17 +278,15 @@ const Playground = () => {
                   );
                   setLoading(false);
                   setCode(data?.code || "");
-                  console.log(
-                    "123",
-                    formMapRef.current[StepEnum.SETP_3]?.current?.getFieldValue(
-                      "framework"
-                    )
-                  );
                   setCodeHighlightLanguage(
                     formMapRef.current[StepEnum.SETP_3]?.current?.getFieldValue(
                       "framework"
                     )
                   );
+                  setWorkFlow({
+                    ...workFlow,
+                    [StepEnum.SETP_3]: data?.code,
+                  });
                   return true;
                 }}
               >
@@ -283,7 +300,7 @@ const Playground = () => {
         <Spin
           tip="Generating code By AI..."
           size="large"
-          className="!absolute top-0 left-0 w-full h-full !flex flex-col items-center justify-center"
+          className="!absolute top-0 left-0 w-full h-full bg-black/20 !flex flex-col items-center justify-center"
         />
       ) : null}
     </section>

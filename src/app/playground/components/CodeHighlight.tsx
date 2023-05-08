@@ -1,19 +1,19 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { LegacyRef, useCallback, useEffect, useRef, useState } from "react";
 import Prism from "prismjs";
 import { message } from "antd";
 
 import "prismjs/plugins/toolbar/prism-toolbar.css";
 import "prismjs/plugins/toolbar/prism-toolbar";
 
-import "prismjs/components/prism-sql";
-import "prismjs/components/prism-cshtml";
-import "prismjs/components/prism-javascript";
-import "prismjs/components/prism-jsx";
-import "prismjs/components/prism-go";
-import "prismjs/components/prism-typescript";
-import "prismjs/components/prism-java";
-import "prismjs/components/prism-python";
+// import "prismjs/components/prism-sql";
+// import "prismjs/components/prism-cshtml";
+// import "prismjs/components/prism-javascript";
+// import "prismjs/components/prism-jsx";
+// import "prismjs/components/prism-go";
+// import "prismjs/components/prism-typescript";
+// import "prismjs/components/prism-java";
+// import "prismjs/components/prism-python";
 
 import "prismjs/themes/prism.css";
 import "prismjs/themes/prism-okaidia.css";
@@ -24,6 +24,7 @@ const CodeHighlight: NextPage<{
   language: string;
   code: string;
 }> = ({ language, code }) => {
+  const preRef = useRef<LegacyRef<HTMLElement> | undefined>();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [prismLanguage, setPrismLanguage] = useState<string>(
@@ -40,22 +41,27 @@ const CodeHighlight: NextPage<{
       text: "Copy", // required
       onClick: handleCopyCode,
     });
-
-    Prism.highlightAll();
-  }, [handleCopyCode]);
+  }, []);
 
   useEffect(() => {
     if (language.startsWith("Vue")) {
-      setPrismLanguage("cshtml");
+      setPrismLanguage(() => "cshtml");
     } else if (language === "React") {
-      setPrismLanguage("jsx");
+      setPrismLanguage(() => "jsx");
     } else {
-      setPrismLanguage(language.toLocaleLowerCase());
+      setPrismLanguage(() => language.toLocaleLowerCase());
     }
-  }, [language]);
+
+    console.log(prismLanguage);
+    import("prismjs/components/prism-" + prismLanguage);
+    Prism.highlight(code, Prism.languages["js"], prismLanguage);
+
+    console.log(123123);
+  }, [language, code, prismLanguage]);
   return (
     <section className="w-full h-full">
       {contextHolder}
+      {prismLanguage}
       <pre className="Code line-numbers w-full h-full !p-1 !rounded-none !m-0 overflow-hidden">
         <code className={`language-${prismLanguage} overflow-hidden h-full`}>
           {code}
