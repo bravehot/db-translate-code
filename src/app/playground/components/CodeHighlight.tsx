@@ -6,14 +6,14 @@ import { message } from "antd";
 import "prismjs/plugins/toolbar/prism-toolbar.css";
 import "prismjs/plugins/toolbar/prism-toolbar";
 
-// import "prismjs/components/prism-sql";
-// import "prismjs/components/prism-cshtml";
-// import "prismjs/components/prism-javascript";
-// import "prismjs/components/prism-jsx";
-// import "prismjs/components/prism-go";
-// import "prismjs/components/prism-typescript";
-// import "prismjs/components/prism-java";
-// import "prismjs/components/prism-python";
+import "prismjs/components/prism-sql";
+import "prismjs/components/prism-cshtml";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-go";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-python";
 
 import "prismjs/themes/prism.css";
 import "prismjs/themes/prism-okaidia.css";
@@ -24,7 +24,7 @@ const CodeHighlight: NextPage<{
   language: string;
   code: string;
 }> = ({ language, code }) => {
-  const preRef = useRef<LegacyRef<HTMLElement> | undefined>();
+  const preRef = useRef<LegacyRef<HTMLElement>>();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [prismLanguage, setPrismLanguage] = useState<string>(
@@ -41,7 +41,7 @@ const CodeHighlight: NextPage<{
       text: "Copy", // required
       onClick: handleCopyCode,
     });
-  }, []);
+  }, [handleCopyCode]);
 
   useEffect(() => {
     if (language.startsWith("Vue")) {
@@ -52,21 +52,22 @@ const CodeHighlight: NextPage<{
       setPrismLanguage(() => language.toLocaleLowerCase());
     }
 
-    console.log(prismLanguage);
-    import("prismjs/components/prism-" + prismLanguage);
-    Prism.highlight(code, Prism.languages["js"], prismLanguage);
-
-    console.log(123123);
-  }, [language, code, prismLanguage]);
+    preRef.current = Prism.highlight(code, Prism.languages.js, prismLanguage);
+    console.log(" preRef.current: ", preRef.current);
+  }, [language]);
   return (
     <section className="w-full h-full">
       {contextHolder}
       {prismLanguage}
-      <pre className="Code line-numbers w-full h-full !p-1 !rounded-none !m-0 overflow-hidden">
-        <code className={`language-${prismLanguage} overflow-hidden h-full`}>
-          {code}
-        </code>
-      </pre>
+
+      {preRef.current && (
+        <pre className="Code line-numbers w-full h-full !p-1 !rounded-none !m-0 overflow-hidden">
+          <code
+            dangerouslySetInnerHTML={{ __html: preRef.current }}
+            className={`language-${prismLanguage} overflow-hidden h-full`}
+          />
+        </pre>
+      )}
     </section>
   );
 };

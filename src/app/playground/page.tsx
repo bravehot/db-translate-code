@@ -92,7 +92,7 @@ const Playground = () => {
       {contextHolder}
       <Row className="w-full h-full">
         <Col span={12}>
-          {currentStep === StepEnum.SETP_1 ? (
+          {currentStep === StepEnum.SETP_1 && (
             <CodeEditor
               code={code}
               setCode={setCode}
@@ -100,7 +100,13 @@ const Playground = () => {
                 StepEnum.SETP_1
               ]?.current?.getFieldValue("language")}
             />
-          ) : (
+          )}
+
+          {currentStep === StepEnum.SETP_2 && (
+            <CodeHighlight language={codeHighlightLanguage} code={code} />
+          )}
+
+          {currentStep === StepEnum.SETP_3 && (
             <CodeHighlight language={codeHighlightLanguage} code={code} />
           )}
         </Col>
