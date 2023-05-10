@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Button, Col, Row, Spin, message } from "antd";
 import {
   ProFormSelect,
@@ -16,16 +16,17 @@ import { getCodeField, getGenerateCode, getTsCode } from "@/utils/request";
 
 import type { ProFormInstance } from "@ant-design/pro-components";
 import type { InteCodeEditorProp } from "./components/CodeEditor";
+import type { NextPage } from "next";
 
 export interface InteEditorConfig extends Omit<InteCodeEditorProp, "setCode"> {}
 
-export enum StepEnum {
+enum StepEnum {
   SETP_1,
   SETP_2,
   SETP_3,
 }
 
-const Playground = () => {
+const Playground: NextPage = () => {
   const formMapRef = useRef<
     React.MutableRefObject<ProFormInstance<any> | undefined>[]
   >([]);
@@ -39,6 +40,13 @@ const Playground = () => {
   const [workFlow, setWorkFlow] = useState<{
     [key in StepEnum]?: string;
   }>({});
+
+  const apiKeyMemo = useMemo(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("_apiKey");
+    }
+    return "";
+  }, []);
 
   const getTsCodeFieldList = async (
     apiKey: string,
@@ -58,7 +66,7 @@ const Playground = () => {
         `() => {${fieldList?.replaceAll("\n", "")} \n return fieldLists}`
       )();
 
-      if (!localStorage.getItem("_apiKey")) {
+      if (typeof window !== undefined && !localStorage.getItem("_apiKey")) {
         localStorage.setItem("_apiKey", apiKey);
       }
 
@@ -180,7 +188,7 @@ const Playground = () => {
                 title="Config"
                 initialValues={{
                   language: "sql",
-                  key: localStorage.getItem("_apiKey"),
+                  key: apiKeyMemo,
                 }}
                 onFinish={async (value) => {
                   if (!code) {
@@ -241,7 +249,7 @@ const Playground = () => {
                 title="Field"
                 onFinish={async (val) => {
                   setLoading(true);
-                  const API_KEY = localStorage.getItem("_apiKey");
+                  const API_KEY = apiKeyMemo;
                   const { tscode } = await getTsCode(val.fieldList, API_KEY!);
                   setCode(tscode || "");
                   setLoading(false);
@@ -265,7 +273,7 @@ const Playground = () => {
                 }}
                 onFinish={async (val) => {
                   setLoading(true);
-                  const API_KEY = localStorage.getItem("_apiKey");
+                  const API_KEY = apiKeyMemo;
 
                   const data = await getGenerateCode(
                     {
