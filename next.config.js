@@ -11,6 +11,15 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/docs",
+        destination: "https://www.yuque.com/aiyouwai/gfni48/fskou5t8g6ogdc7z",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
