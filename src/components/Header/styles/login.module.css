@@ -1,7 +1,0 @@
-.login-btn {
-  @apply cursor-pointer bg-gradient-to-r tracking-wider from-violet-500 to-fuchsia-500 w-52 h-10 rounded-xl text-white font-bold text-base px-4 mx-4;
-}
-
-.login-btn:hover {
-  @apply underline;
-}

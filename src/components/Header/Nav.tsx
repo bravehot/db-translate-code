@@ -2,8 +2,8 @@ import Link from "next/link";
 import classnames from "classnames";
 import { usePathname } from "next/navigation";
 
-import Login from "./Login";
 import type { NextPage } from "next";
+import GithubBtn from "./GithubBtn";
 
 const Nav: NextPage = () => {
   const pathName = usePathname();
@@ -28,7 +28,7 @@ const Nav: NextPage = () => {
       >
         Docs
       </Link>
-      <Login />
+      <GithubBtn />
     </>
   );
 };

@@ -1,5 +1,5 @@
 {
-  "name": "db-translate-code1",
+  "name": "tutu-code",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,9 +17,7 @@
     "classnames": "^2.3.2",
     "eslint": "8.39.0",
     "eslint-config-next": "13.3.1",
-    "framer-motion": "^10.12.4",
     "next": "13.3.1",
-    "next-auth": "4",
     "openai": "^3.2.1",
     "postcss": "8.4.23",
     "react": "18.2.0",

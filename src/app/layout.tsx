@@ -1,6 +1,5 @@
 "use client";
 import { ConfigProvider } from "antd";
-import { SessionProvider } from "next-auth/react";
 
 import Background from "../components/Background";
 import Header from "../components/Header";
@@ -21,12 +20,10 @@ export default function RootLayout({
       </head>
       <body>
         <ConfigProvider theme={theme}>
-          <SessionProvider>
-            <main className="max-w-screen-xl h-screen mx-auto flex flex-col relative z-10 overflow-hidden pb-4">
-              <Header />
-              {children}
-            </main>
-          </SessionProvider>
+          <main className="max-w-screen-xl h-screen mx-auto flex flex-col relative z-10 overflow-hidden pb-4">
+            <Header />
+            {children}
+          </main>
           <Background />
         </ConfigProvider>
       </body>
