@@ -18,7 +18,7 @@ export default function RootLayout({
       <body>
         <ConfigProvider theme={theme}>
           <SessionProvider>
-            <main className="max-w-5xl h-screen mx-auto flex flex-col relative z-10 overflow-hidden pb-4">
+            <main className="max-w-screen-xl h-screen mx-auto flex flex-col relative z-10 overflow-hidden pb-4">
               <Header />
               {children}
             </main>
