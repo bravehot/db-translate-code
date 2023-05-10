@@ -1,6 +1,4 @@
 "use client";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { ConfigProvider } from "antd";
 import { SessionProvider } from "next-auth/react";
 
@@ -18,18 +16,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <QueryClientProvider client={new QueryClient()}>
-          <ConfigProvider theme={theme}>
-            <SessionProvider>
-              <main className="max-w-5xl h-screen mx-auto flex flex-col relative z-10 overflow-hidden pb-4">
-                <Header />
-                {children}
-              </main>
-            </SessionProvider>
-            <Background />
-            <ReactQueryDevtools />
-          </ConfigProvider>
-        </QueryClientProvider>
+        <ConfigProvider theme={theme}>
+          <SessionProvider>
+            <main className="max-w-5xl h-screen mx-auto flex flex-col relative z-10 overflow-hidden pb-4">
+              <Header />
+              {children}
+            </main>
+          </SessionProvider>
+          <Background />
+        </ConfigProvider>
       </body>
     </html>
   );

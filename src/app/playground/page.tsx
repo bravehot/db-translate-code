@@ -135,6 +135,7 @@ const Playground = () => {
                         key="pre1"
                         onClick={() => {
                           setCode(workFlow[StepEnum.SETP_1] || "");
+                          setCodeHighlightLanguage("typescript");
                           props.onPre?.();
                         }}
                       >
@@ -156,6 +157,7 @@ const Playground = () => {
                         key="pre2"
                         onClick={() => {
                           setCode(workFlow[StepEnum.SETP_2] || "");
+                          setCodeHighlightLanguage("typescript");
                           props.onPre?.();
                         }}
                       >
@@ -298,7 +300,7 @@ const Playground = () => {
       </Row>
       {isLoading ? (
         <Spin
-          tip="Generating code By AI..."
+          tip="Generating Code By AI..."
           size="large"
           className="!absolute top-0 left-0 w-full h-full bg-black/20 !flex flex-col items-center justify-center"
         />

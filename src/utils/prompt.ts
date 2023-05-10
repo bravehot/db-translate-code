@@ -3,11 +3,11 @@ export const getTypescriptCode = (
   language: string,
   codeType?: string
 ) => {
-  return `Generate Typescript code from ${language} ${codeType} code and determine whether it is optional property Required in TypeScript. \n ${code} \n\n`;
+  return `Generate Typescript code from ${language} ${codeType} code, use camel-case method and determine whether it is optional property Required in TypeScript. \n ${code} \n\n`;
 };
 
 export const getFieldList = (language: string, code: string) => {
-  return `Uses the JavaScript to generate an array the array variable name is "fieldLists", An object is stored in "fieldLists", and each object has "name", "type", "required", "labelName" properties. where "name" is the field name and use camel-case method, converts the ${language} type of the field to Javascript type and assigns values to "type", determines whether "required" is required according to SQL and "labelName" to the comment value of the ${language}. \n ${code} \n\n`;
+  return `Uses the JavaScript to generate an array the array variable name is "fieldLists", An object is stored in "fieldLists", use camel-case method and each object has "name", "type", "required", "labelName" properties. where "name" is the field name and use camel-case method, converts the ${language} type of the field to Javascript type and assigns values to "type", determines whether "required" is required according to SQL and "labelName" to the comment value of the ${language}. \n ${code} \n\n`;
 };
 
 export const generateTSCode = (code: string) => {
@@ -16,10 +16,9 @@ export const generateTSCode = (code: string) => {
 
 export const generateCode = (prompt: any) => {
   const { code, framework, useTs, componetLib, component, mockData } = prompt;
-  const useTsText = useTs === "Y" ? "Typescript and" : "Not use TypScript,";
+  const useTsText = useTs === "Y" ? "use Typescript and" : "Not use TypScript,";
   const mockDataText =
     mockData === "Y" ? `while generating some default data.` : "";
-
   let fileName = "";
   let frameworkCode = "";
   switch (framework) {
@@ -29,10 +28,11 @@ export const generateCode = (prompt: any) => {
       break;
     case "Vue3":
       // 在 GPT3.5 中无法生成 setup 语法
-      // frameworkCode = "<script setup> syntactic sugar, ";
+      frameworkCode = `template and script grammar, use reactive to define ${component} data`;
       fileName = ".vue";
       break;
     case "Vue2":
+      frameworkCode = `template and script grammar,`;
       fileName = ".vue";
       break;
 

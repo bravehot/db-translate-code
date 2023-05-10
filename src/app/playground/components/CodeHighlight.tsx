@@ -33,7 +33,7 @@ const CodeHighlight: NextPage<InteCodeHighlightProp> = ({ language, code }) => {
   };
 
   return (
-    <section className="relative">
+    <section className="relative w-full h-full">
       {contextHolder}
       <SyntaxHighlighter
         className="h-full w-full mt-0"
