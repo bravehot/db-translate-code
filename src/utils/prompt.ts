@@ -7,7 +7,7 @@ export const getTypescriptCode = (
 };
 
 export const getFieldList = (language: string, code: string) => {
-  return `Uses the JavaScript to generate an array the array variable name is "fieldLists", An object is stored in "fieldLists", and each object has "name", "type", "required", "labelName" properties. where "name" is the field name and use camel-case method, converts the ${language} type of the field to Javascript type and assigns values to "type", determines whether "required" is required according to SQL and "labelName" to the comment value of the ${language} field. \n ${code} \n\n`;
+  return `Uses the JavaScript to generate an array the array variable name is "fieldLists", An object is stored in "fieldLists", and each object has "name", "type", "required", "labelName" properties. where "name" is the field name and use camel-case method, converts the ${language} type of the field to Javascript type and assigns values to "type", determines whether "required" is required according to SQL and "labelName" to the comment value of the ${language}. \n ${code} \n\n`;
 };
 
 export const generateTSCode = (code: string) => {

@@ -15,7 +15,7 @@ const completion = async (prompt: string, apiKey: string) => {
       frequency_penalty: 0,
       presence_penalty: 0,
       prompt,
-      stop: ["\\n"],
+      stop: ["\\n\\n"],
     });
     return response.data.choices[0].text;
   } catch (error) {

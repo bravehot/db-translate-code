@@ -1,72 +1,53 @@
 "use client";
-import { LegacyRef, useCallback, useEffect, useRef, useState } from "react";
-import Prism from "prismjs";
+import { NextPage } from "next";
+import { useEffect, useState } from "react";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { ocean } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { CopyOutlined } from "@ant-design/icons";
 import { message } from "antd";
 
-import "prismjs/plugins/toolbar/prism-toolbar.css";
-import "prismjs/plugins/toolbar/prism-toolbar";
-
-// import "prismjs/components/prism-sql";
-// import "prismjs/components/prism-cshtml";
-// import "prismjs/components/prism-javascript";
-// import "prismjs/components/prism-jsx";
-// import "prismjs/components/prism-go";
-// import "prismjs/components/prism-typescript";
-// import "prismjs/components/prism-java";
-// import "prismjs/components/prism-python";
-
-import "prismjs/themes/prism.css";
-import "prismjs/themes/prism-okaidia.css";
-
-import type { NextPage } from "next";
-
-const CodeHighlight: NextPage<{
+interface InteCodeHighlightProp {
   language: string;
   code: string;
-}> = ({ language, code }) => {
-  const preRef = useRef<LegacyRef<HTMLElement> | undefined>();
+}
+
+const CodeHighlight: NextPage<InteCodeHighlightProp> = ({ language, code }) => {
   const [messageApi, contextHolder] = message.useMessage();
 
-  const [prismLanguage, setPrismLanguage] = useState<string>(
-    language.toLocaleLowerCase()
-  );
-
-  const handleCopyCode = useCallback(async () => {
-    await window.navigator.clipboard.writeText(code);
-    messageApi.success("Copied to clipboard");
-  }, [messageApi, code]);
-
-  useEffect(() => {
-    Prism.plugins.toolbar.registerButton("copy button", {
-      text: "Copy", // required
-      onClick: handleCopyCode,
-    });
-  }, []);
+  const [highlightLanguage, setHighlightLanguage] =
+    useState<string>("typescript");
 
   useEffect(() => {
     if (language.startsWith("Vue")) {
-      setPrismLanguage(() => "cshtml");
+      setHighlightLanguage(() => "xml");
     } else if (language === "React") {
-      setPrismLanguage(() => "jsx");
+      setHighlightLanguage(() => "jsx");
     } else {
-      setPrismLanguage(() => language.toLocaleLowerCase());
+      setHighlightLanguage(() => language.toLocaleLowerCase());
     }
+  }, [language]);
 
-    console.log(prismLanguage);
-    import("prismjs/components/prism-" + prismLanguage);
-    Prism.highlight(code, Prism.languages["js"], prismLanguage);
+  const handleCopy = async () => {
+    await window.navigator.clipboard.writeText(code);
+    messageApi.success("Copied  🎉 ");
+  };
 
-    console.log(123123);
-  }, [language, code, prismLanguage]);
   return (
-    <section className="w-full h-full">
+    <section className="relative">
       {contextHolder}
-      {prismLanguage}
-      <pre className="Code line-numbers w-full h-full !p-1 !rounded-none !m-0 overflow-hidden">
-        <code className={`language-${prismLanguage} overflow-hidden h-full`}>
-          {code}
-        </code>
-      </pre>
+      <SyntaxHighlighter
+        className="h-full w-full mt-0"
+        language={highlightLanguage}
+        showLineNumbers
+        wrapLines
+        style={ocean}
+      >
+        {code}
+      </SyntaxHighlighter>
+      <CopyOutlined
+        className="absolute top-2 right-2 cursor-pointer"
+        onClick={handleCopy}
+      />
     </section>
   );
 };
