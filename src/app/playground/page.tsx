@@ -45,7 +45,7 @@ const Playground: NextPage = () => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("_apiKey");
     }
-    return "";
+    return formMapRef.current[StepEnum.SETP_1].current?.getFieldValue("key");
   }, []);
 
   const getTsCodeFieldList = async (
@@ -70,15 +70,15 @@ const Playground: NextPage = () => {
         localStorage.setItem("_apiKey", apiKey);
       }
 
-      formMapRef?.current?.forEach((formInstanceRef, stepIndex) => {
+      formMapRef.current?.forEach((formInstanceRef, stepIndex) => {
         if (stepIndex === StepEnum.SETP_2) {
           formInstanceRef.current?.setFieldsValue({
             fieldList: currentFieldList,
           });
         }
       });
-      setCodeHighlightLanguage("typescript");
 
+      setCodeHighlightLanguage("typescript");
       setCode(tscode?.replace("\n", "") || "");
       setWorkFlow({
         ...workFlow,
