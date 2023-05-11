@@ -28,7 +28,7 @@ export const generateCode = (prompt: any) => {
       break;
     case "Vue3":
       // 在 GPT3.5 中无法生成 setup 语法
-      frameworkCode = `template and script grammar, use reactive to define ${component} data`;
+      frameworkCode = `template and script grammar, use reactive to define ${component} data,`;
       fileName = ".vue";
       break;
     case "Vue2":

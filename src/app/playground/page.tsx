@@ -45,7 +45,7 @@ const Playground: NextPage = () => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("_apiKey");
     }
-    return formMapRef.current[StepEnum.SETP_1]?.current?.getFieldValue("key");
+    return "";
   }, []);
 
   const getTsCodeFieldList = async (
@@ -249,8 +249,11 @@ const Playground: NextPage = () => {
                 title="Field"
                 onFinish={async (val) => {
                   setLoading(true);
-                  const API_KEY = apiKeyMemo;
-                  const { tscode } = await getTsCode(val.fieldList, API_KEY!);
+                  const API_KEY =
+                    formMapRef.current[StepEnum.SETP_1]?.current?.getFieldValue(
+                      "key"
+                    );
+                  const { tscode } = await getTsCode(val.fieldList, API_KEY);
                   setCode(tscode || "");
                   setLoading(false);
                   setWorkFlow({
@@ -273,7 +276,10 @@ const Playground: NextPage = () => {
                 }}
                 onFinish={async (val) => {
                   setLoading(true);
-                  const API_KEY = apiKeyMemo;
+                  const API_KEY =
+                    formMapRef.current[StepEnum.SETP_1]?.current?.getFieldValue(
+                      "key"
+                    );
 
                   const data = await getGenerateCode(
                     {
