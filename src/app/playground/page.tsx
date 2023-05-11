@@ -45,7 +45,7 @@ const Playground: NextPage = () => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("_apiKey");
     }
-    return formMapRef.current[StepEnum.SETP_1].current?.getFieldValue("key");
+    return formMapRef.current[StepEnum.SETP_1]?.current?.getFieldValue("key");
   }, []);
 
   const getTsCodeFieldList = async (
