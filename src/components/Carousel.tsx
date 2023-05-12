@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Button, Carousel as CarouselAntd } from "antd";
+import { Carousel as CarouselAntd } from "antd";
 
 import screen1 from "../../public/screen1.png";
 import screen2 from "../../public/screen2.png";
