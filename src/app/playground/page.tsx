@@ -12,7 +12,7 @@ import FieldList from "./components/FieldList";
 import GetCode from "./components/GetCode";
 import CodeHighlight from "./components/CodeHighlight";
 
-import { getCodeField, getGenerateCode, getTsCode } from "@/utils/request";
+import { getStep2Code, getGenerateCode, getTsCode } from "@/utils/request";
 
 import type { ProFormInstance } from "@ant-design/pro-components";
 import type { InteCodeEditorProp } from "./components/CodeEditor";
@@ -54,15 +54,24 @@ const Playground: NextPage = () => {
     codeType?: string
   ): Promise<boolean> => {
     setLoading(true);
-    const { tscode, fieldList } = await getCodeField({
+    const { fieldList, typescriptCode } = await getStep2Code({
       code,
       apiKey,
       language,
       codeType,
     });
 
+    if (
+      fieldList?.replaceAll("\n", "") === "401" ||
+      typescriptCode?.replaceAll("\n", "") === "401"
+    ) {
+      messageApi.error("The code or language type is incorrect!");
+      setLoading(false);
+      return false;
+    }
+
     try {
-      const currentFieldList = eval(
+      const fieldListRes = eval(
         `() => {${fieldList?.replaceAll("\n", "")} \n return fieldLists}`
       )();
 
@@ -73,17 +82,18 @@ const Playground: NextPage = () => {
       formMapRef.current?.forEach((formInstanceRef, stepIndex) => {
         if (stepIndex === StepEnum.SETP_2) {
           formInstanceRef.current?.setFieldsValue({
-            fieldList: currentFieldList,
+            fieldList: fieldListRes,
           });
         }
       });
 
+      const tscode = typescriptCode?.replace("\n", "");
       setCodeHighlightLanguage("typescript");
-      setCode(tscode?.replace("\n", "") || "");
+      setCode(tscode || "");
       setWorkFlow({
         ...workFlow,
         [StepEnum.SETP_1]: code,
-        [StepEnum.SETP_2]: tscode?.replace("\n", "")!,
+        [StepEnum.SETP_2]: tscode,
       });
       return true;
     } catch (error) {
