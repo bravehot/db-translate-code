@@ -5,7 +5,7 @@ export const getStep2TypescriptPrompt = (
 ) => {
   return `Generate a Typescript code delimited by Angle brackets, the code in Angle brackets is ${language}. \n
   Please use camel-case method and determine whether it is optional property required in TypeScript. \n
-  if the code in Angle brackets does not generate the correct code or is not ${language} ${codeType}, just only return the number 401. \n 
+  if the code in Angle brackets does not generate the correct code or is not ${language} ${codeType ?? ""}, just only return the number 401. \n 
   <>${code}<>`;
 };
 
@@ -36,7 +36,7 @@ export const getStep3Prompt = (prompt: any) => {
       break;
     case "Vue3":
       // 在 text-davinci-003 model 中无法生成 script setup 语法.
-      frameworkCode = `use ${framework} template and script grammar and use ref to defined data,`;
+      frameworkCode = `use vue3 composition api, template and script grammar, setup syntactic and use ref to defined data,`;
       fileName = ".vue";
       break;
     case "Vue2":
@@ -48,7 +48,7 @@ export const getStep3Prompt = (prompt: any) => {
       break;
   }
 
-  return `Generate a ${useFramework} code delimited by Angle brackets, the code ${frameworkCode} ${useTypescript} ${componetLib} to generate a ${component} component, the component will used in a ${fileName} file. ${useMockData} \n
+  return `Generate a ${useFramework} code delimited by Angle brackets, the code ${frameworkCode} ${useTypescript} ${componetLib} to generate a ${component} component, the component will used in a ${fileName} file, make the field comment assign to the label name, ${useMockData} \n
   if the code in Angle brackets does not generate the correct code, just return the number 401. \n
   <>${code}<>`;
 };
