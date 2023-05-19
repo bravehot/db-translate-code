@@ -1,6 +1,7 @@
 "use client";
-import Editor from "@monaco-editor/react";
 import type { NextPage } from "next";
+import dynamic from "next/dynamic";
+import "@uiw/react-textarea-code-editor/dist.css";
 
 export interface InteCodeEditorProp {
   code: string;
@@ -8,24 +9,31 @@ export interface InteCodeEditorProp {
   language: string;
 }
 
+const Editor = dynamic(
+  () => import("@uiw/react-textarea-code-editor").then((mod) => mod.default),
+  { ssr: false }
+);
+
 const CodeEditor: NextPage<InteCodeEditorProp> = ({
   code,
   setCode,
   language,
 }) => {
-  const handleChange = (val: string | undefined) => {
-    if (val) {
-      setCode(val);
-    }
-  };
-
   return (
-    <Editor
-      theme="vs-dark"
-      value={code}
-      language={language}
-      onChange={handleChange}
-    />
+    <div data-color-mode="dark" className="w-full h-full">
+      <Editor
+        className="w-full h-full"
+        value={code}
+        language={language}
+        placeholder="Please enter code."
+        onChange={(event) => setCode(event.target.value || "")}
+        style={{
+          fontFamily:
+            "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+          fontSize: 12,
+        }}
+      />
+    </div>
   );
 };
 
