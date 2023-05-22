@@ -12,7 +12,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  console.log(process);
+  console.log("process.env.NODE_ENV: ", process.env.NODE_ENV);
   return (
     <html lang="en">
       <head>
@@ -20,23 +20,19 @@ export default function RootLayout({
         <title>Tutu Code</title>
       </head>
       <body>
-        {process.env.NODE_ENV === "production" && (
-          <template>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){window.dataLayer.push(arguments);}
-                gtag('js', new Date());
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){window.dataLayer.push(arguments);}
+            gtag('js', new Date());
 
-                gtag('config', ${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID});
-              `}
-            </Script>
-          </template>
-        )}
+            gtag('config', ${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID});
+          `}
+        </Script>
 
         <ConfigProvider theme={theme}>
           <main className="max-w-screen-xl h-screen mx-auto flex flex-col relative z-10 overflow-hidden pb-4">
